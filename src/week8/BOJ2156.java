@@ -4,7 +4,11 @@ import java.util.Scanner;
 
 public class BOJ2156 {
 
-    // 키포인트 : 규칙을 준수하는 점화식을 세울 수 있어야 함
+    // 경우 1) n 을 포함하는 경우
+    //      i ) n-2최대누적 + n요소
+    //      ii) n-3최대누적 + n-1요소 + n요소
+    // 경우 2) n 을 포함하지 않는 경우 (그래도 점화식은 같음)
+    //      i ) n-1최대누적
 
     private static int[] seq;
     private static Integer[] dp;
@@ -28,8 +32,11 @@ public class BOJ2156 {
     public static int recur(int i) {
         if (dp[i] == null) {
             dp[i] = Math.max(
-                    Math.max(recur(i - 2), recur(i - 3) + seq[i - 1]) + seq[i],
-                    recur(i - 1));
+                        Math.max(
+                                recur(i - 2),
+                                recur(i - 3) + seq[i - 1]
+                        ) + seq[i],
+                            recur(i - 1));
         }
         return dp[i];
     }
