@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Stack;
 import java.util.StringTokenizer;
 
 public class BOJ1260 {
@@ -13,7 +12,6 @@ public class BOJ1260 {
     private static int[][] board;
     private static boolean[] visited; // 양방향 간선이기 때문에 1차원. (x,y) 방문했다면 (y,x) 방문할 필요없음 또는 (y,x) 방문했다면 (x,y) 방문할 필요없음
 
-    private static Stack<Integer> stack = new Stack<>();
     private static Queue<Integer> queue = new LinkedList<>();
 
     private static int VERTEX; // 정점
@@ -56,7 +54,7 @@ public class BOJ1260 {
         return sb.toString();
     }
 
-    public static void DFS_RECURSION(int x) { // 행을 하나씩 내려가면서(+1) 재귀
+    public static void DFS_RECURSION(int x) { // 행을 맞닿은 최소행으로 갱신하면서 재귀
         visited[x] = true; // 방문
         sb.append(x).append(" ");
 
