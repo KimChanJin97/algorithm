@@ -45,7 +45,7 @@ public class BOJ4963_DFS {
             for (int i = 0; i < height; i++) { // 높이
                 for (int j = 0; j < width; j++) { // 너비
                     if (!visited[i][j] && board[i][j] == 1) {
-                        DFS(i, j);
+                        DFS(j, i); // width, height
                         count++;
                     }
                 }
@@ -54,17 +54,15 @@ public class BOJ4963_DFS {
         }
     }
 
-    private static void DFS(int x, int y) {
-        visited[x][y] = true;
+    private static void DFS(int w, int h) {
+        visited[h][w] = true;
         for (int i = 0; i < 8; i++) {
-            int nextX = x + dirX[i];
-            int nextY = y + dirY[i];
-            // 2차원 행렬 -> x 높이, y 너비
-            if (nextX < 0 || nextY < 0 || nextX >= height || nextY >= width) {
-                // 2차원 행렬이 0부터 시작하기 때문에 height 또는 width 를 포함하면 범위를 벗어난 것으로 간주
+            int nextX = w + dirX[i];
+            int nextY = h + dirY[i];
+            if (nextX < 0 || nextY < 0 || nextX > width - 1 || nextY > height - 1) {
                 continue;
             }
-            if (!visited[nextX][nextY] && board[nextX][nextY] == 1) {
+            if (!visited[nextY][nextX] && board[nextY][nextX] == 1) {
                 DFS(nextX, nextY);
             }
         }

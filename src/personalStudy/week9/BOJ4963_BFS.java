@@ -46,7 +46,7 @@ public class BOJ4963_BFS {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     if (!visited[i][j] && board[i][j] == 1) {
-                        BFS(i, j);
+                        BFS(j, i); // width, height
                         count++;
                     }
                 }
@@ -55,19 +55,21 @@ public class BOJ4963_BFS {
         }
     }
 
-    private static void BFS(int x, int y) {
+    private static void BFS(int w, int h) {
         final Queue<int[]> QUEUE = new LinkedList<>();
-        QUEUE.add(new int[]{x,y});
-        visited[x][y] = true;
+        QUEUE.add(new int[]{w, h});
+        visited[h][w] = true;
         while (!QUEUE.isEmpty()) {
             int[] pos = QUEUE.poll();
             for (int i = 0; i < 8; i++) {
                 int nextX = pos[0] + dirX[i];
                 int nextY = pos[1] + dirY[i];
-                if (nextX < 0 || nextY < 0 || nextX >= height || nextY >= width) continue;
-                if (!visited[nextX][nextY] && board[nextX][nextY] == 1) {
+                if (nextX < 0 || nextY < 0 || nextX > width - 1 || nextY > height - 1) {
+                    continue;
+                }
+                if (!visited[nextY][nextX] && board[nextY][nextX] == 1) {
                     QUEUE.add(new int[]{nextX, nextY});
-                    visited[nextX][nextY] = true;
+                    visited[nextY][nextX] = true;
                 }
             }
         }
