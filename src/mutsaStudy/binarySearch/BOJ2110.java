@@ -1,56 +1,54 @@
 package mutsaStudy.binarySearch;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.Scanner;
 
 public class BOJ2110 {
 
-    private static int[] houses;
+    private static int[] house;
 
-    public static long solution() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+    private static int solution() {
+        Scanner sc = new Scanner(System.in);
+        int N = sc.nextInt();
+        house = new int[N];
+        int M = sc.nextInt();
 
-        int N = Integer.parseInt(st.nextToken());
-        int C = Integer.parseInt(st.nextToken());
-
-        houses = new int[N];
         for (int i = 0; i < N; i++) {
-            houses[i] = Integer.parseInt(br.readLine());
+            house[i] = sc.nextInt();
         }
+        Arrays.sort(house);
 
-        Arrays.sort(houses);
+        int lo = 1; // 공유기 설치 최소 간격
+        int hi = house[N - 1] - house[0] + 1; // 공유기 설치 최대 간격 + 1
 
-        long left = 1;
-        long right = houses[N - 1] - houses[0] + 1; // upperBound 형식이므로 +1
-
-        while (left < right) { // upperBound 형식
-            long mid = (left + right) / 2;
-
-            int count = 1;
-            int lastLocate = houses[0];
-            for (int i = 1; i < N; i++) {
-                int locate = houses[i];
-                if (locate - lastLocate >= mid) {
-                    count++;
-                    lastLocate = locate;
-                }
-            }
-
-            if (count < C) { // 설치개수가 C 보다 작다면 mid(설치간격)이 컸기 때문임 -> 이분탐색 범위를 왼쪽으로 이동
-                right = mid; // 조건이 count < C 이기 때문에 right = mid 하더라도 arr[right] 는 무조건 arr[mid] 를 초과하기 때문에 옳다 (정렬 가정)
-            } else { // 설치개수가 C 보다 크다면 mid(설치간격)이 작았기 때문임 -> 이분탐색 범위를 오른쪽으로 이동
-                left = mid + 1;
+        while (lo < hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (canInstall(mid) < M) {
+                hi = mid;
+            } else {
+                lo = mid + 1;
             }
         }
-
-        return left - 1; // upperBound 방식이기 때문에 -1
+        return lo - 1;
     }
 
-    public static void main(String[] args) throws IOException {
+    private static int canInstall(int mid) {
+        // 첫번째(0) 집에 공유기 설치 가정
+        int installCount = 1;
+        int installHouseIndex = house[0];
+
+        // 두번째(1) 집부터 공유기 설치 시작
+        for (int i = 1; i < house.length; i++) {
+            int houseIndex = house[i];
+            if (houseIndex - installHouseIndex >= mid) {
+                installCount++;
+                installHouseIndex = houseIndex;
+            }
+        }
+        return installCount;
+    }
+
+    public static void main(String[] args) {
         System.out.println(solution());
     }
 }

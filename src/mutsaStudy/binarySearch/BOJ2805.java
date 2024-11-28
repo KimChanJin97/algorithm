@@ -1,60 +1,51 @@
 package mutsaStudy.binarySearch;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.Scanner;
 
 public class BOJ2805 {
 
-    private static int[] arr;
+    private static int[] tree;
 
-    public static long solution() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+    private static int solution() {
+        Scanner sc = new Scanner(System.in);
+        int N = sc.nextInt();
+        int key = sc.nextInt();
 
-        final int N = Integer.parseInt(st.nextToken());
-        final int M = Integer.parseInt(st.nextToken());
-
-        st = new StringTokenizer(br.readLine()," ");
-        arr = new int[N];
-        long right = 0;
+        tree = new int[N];
+        int hi = 0;
         for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-            if (right < arr[i]) {
-                right = arr[i];
+            tree[i] = sc.nextInt();
+            if (hi < tree[i]) {
+                hi = tree[i];
             }
         }
 
-//        right++; // 배열의 길이로 right 를 측정하는 것이 아니기 때문에 right++ 할 필요없음
-        long left = 0;
-        long mid = 0;
-
-        // upperBound 방식
-        while (left < right) {
-
-            mid = (left + right) / 2;
-            long sum = 0;
+        int lo = 1;
+        hi++;
+        int mid = 0;
+        long sum = 0;
+        while (lo < hi) {
+            mid = lo + (hi - lo) / 2;
+            sum = 0;
             for (int i = 0; i < N; i++) {
-                if (arr[i] - mid > 0) {
-                    sum += (arr[i] - mid);
+                if (tree[i] >= mid) {
+                    sum += tree[i] - mid;
                 }
             }
-
-            // sum 이 M 보다 작다면 mid 를 감소시켜서 다시 빼봐야 함 -> 이분탐색 범위 왼쪽 이동
-            if (sum < M) {
-                right = mid;
+            // 범위를 줄인다 = 작게 자른다 = 나머지를 늘린다 = sum 증가
+            if (key > sum) {
+                hi = mid;
             }
-            // sum 이 M 보다 크다면 mid 를 증가시켜서 다시 빼봐야 함 -> 이분탐색 범위 오른쪽 이동
+            // 범위를 늘린다 = 크게 자른다 = 나머지를 줄인다 = sum 감소
             else {
-                left = mid + 1;
+                lo = mid + 1;
             }
         }
-
-        return left - 1; // upperBound 이므로 -1
+        return lo;
     }
 
-    public static void main(String[] args) throws IOException {
-        System.out.println(solution());
+    public static void main(String[] args) {
+        System.out.println(solution() - 1);
     }
+
 }

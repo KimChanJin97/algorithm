@@ -1,62 +1,45 @@
 package mutsaStudy.binarySearch;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.util.Scanner;
 
 public class BOJ1654 {
 
     private static int[] arr;
 
-    public static long solution() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+    private static long solution() {
+        Scanner sc = new Scanner(System.in);
+        int K = sc.nextInt();
+        int N = sc.nextInt();
 
-        int K = Integer.parseInt(st.nextToken());
-        int N = Integer.parseInt(st.nextToken());
-
-        // arr 채우기 & right 구하기
-        // right 는 이분탐색(upperBound)을 위해 필요하다
-        long right = 0;
         arr = new int[K];
+        long max = 0;
         for (int i = 0; i < K; i++) {
-            arr[i] = Integer.parseInt(br.readLine());
-            if (right < arr[i]) {
-                right = arr[i];
+            arr[i] = sc.nextInt();
+            if (max < arr[i]) {
+                max = arr[i];
             }
         }
-
-        right += 1; // upperBound 이므로 upperBound + 1
-
-        long left = 0;
-        long mid = 0;
-
-        // upperBound 방식
-        while (left < right) {
-
-            mid = (left + right) / 2;
-
-            // 랜선을 mid 로 나눴을 때 몇 개가 나오는지 판단
-            int count = 0;
-            for (int i = 0; i < K; i++) {
-                count += (arr[i] / mid);
+        max++;
+        long min = 1;
+        while (min < max) {
+            long mid = min + (max - min) / 2;
+            int key = 0;
+            for (long i : arr) {
+                key += i / mid;
             }
-
-            // 나눈 값이 만약 N 개보다 작다면 mid 를 감소시켜서 다시 나눠봐야 함 -> 이분탐색 범위 왼쪽 이동
-            if (count < N) {
-                right = mid;
+            // key 가 작다면 max 감소 (더 작은 값으로 나눠서 key 증가)
+            if (key < N) { // upper bound
+                max = mid;
             }
-            // 나눈 값이 만약 N 개보다 크다면 mid 를 증가시켜서 다시 나눠봐야 함 -> 이분탐색 범위 오른쪽 이동
+            // key 가 크다면 min 증가 (더 큰 값으로 나눠서 key 감소)
             else {
-                left = mid + 1;
+                min = mid + 1;
             }
         }
-
-        return left - 1; // upperBound 이므로 마지막에 -1
+        return min;
     }
 
-    public static void main(String[] args) throws IOException {
-        System.out.println(solution());
+    public static void main(String[] args) {
+        System.out.println(solution() - 1); // upper bound 는 key 초과 최초값이므로 마지막에 - 1
     }
 }
