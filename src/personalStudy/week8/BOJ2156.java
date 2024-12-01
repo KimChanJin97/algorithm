@@ -1,47 +1,50 @@
 package personalStudy.week8;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 
+// 포도주 시식
 public class BOJ2156 {
 
-    // 경우 1) n 을 포함하는 경우
-    //      i ) n-2최대누적 + n요소
-    //      ii) n-3최대누적 + n-1요소 + n요소
-    // 경우 2) n 을 포함하지 않는 경우 (그래도 점화식은 같음)
-    //      i ) n-1최대누적
-
-    private static int[] seq;
+    private static int[] cups;
     private static Integer[] dp;
 
-    public static int solution() {
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-        seq = new int[n + 1];
+    private static int solution() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int n = Integer.parseInt(br.readLine());
+
+        cups = new int[n + 1]; // ArrayIndexOutOfBoundsException 방지
         dp = new Integer[n + 1];
 
         for (int i = 1; i <= n; i++) {
-            seq[i] = sc.nextInt();
+            cups[i] = Integer.parseInt(br.readLine());
         }
 
-        dp[1] = seq[1];
-        if (n > 1) dp[2] = seq[1] + seq[2];
-
-        return recur(n);
-    }
-
-    public static int recur(int i) {
-        if (dp[i] == null) {
-            dp[i] = Math.max(
-                        Math.max(
-                                recur(i - 2),
-                                recur(i - 3) + seq[i - 1]
-                        ) + seq[i],
-                            recur(i - 1));
+        // ArrayIndexOutOfBoundsException 방지
+        dp[0] = 0;
+        // 확실하게 구할 수 있는 최대 누적합
+        if (n == 1) {
+            dp[1] = cups[1];
         }
-        return dp[i];
+        // 확실하게 구할 수 있는 최대 누적합
+        if (n >= 2) {
+            dp[1] = cups[1];
+            dp[2] = cups[1] + cups[2];
+        }
+
+        return find(n);
     }
 
-    public static void main(String[] args) {
+    private static int find(int n) {
+        if (dp[n] == null) {
+            dp[n] = Math.max(Math.max(find(n - 3) + cups[n - 1], find(n - 2)) + cups[n], find(n - 1));
+        }
+        return dp[n];
+    }
+
+    public static void main(String[] args) throws IOException {
         System.out.println(solution());
     }
 }

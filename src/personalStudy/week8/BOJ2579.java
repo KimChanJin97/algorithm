@@ -1,43 +1,49 @@
 package personalStudy.week8;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
+// 계단 오르기
 public class BOJ2579 {
 
-    // 키포인트 : 규칙을 준수하는 점화식을 세울 수 있어야 함
+    private static int[] stairs;
+    private static Integer[] dp;
 
-    private static int[] seq;
-    private static int[] dp;
+    private static int solution() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine()); // N 은 3000 이하의 자연수
 
-    // 규칙1 : 계단은 하나 또는 두개씩 걸을 수 있음
-    // 규칙2 : 연속 세개 계단을 걸을 순 없음 -> [ 낚시 ] n-1, n 를 걷는 것 자체가 계단 연속 3개 걸은 것임...!
-    // 규칙3 : 마지막 계단은 무조건 걸어야 함
-
-    static int solution() {
-        Scanner sc = new Scanner(System.in);
-        int n = sc.nextInt();
-
-        seq = new int[301];
-        for (int i = 1; i <= n; i++) {
-            seq[i] = sc.nextInt();
+        stairs = new int[N + 1];
+        dp = new Integer[N + 1];
+        for (int i = 1; i <= N; i++) {
+            stairs[i] = Integer.parseInt(br.readLine());
         }
 
-        dp = new int[n + 2]; // n = 1, 2 인 경우 때문에 +2
+        // ArrayIndexOutOfBoundsException 방지
+        dp[0] = 0;
 
-        dp[1] = seq[1]; // n = 1 인 경우, 계단 1개이므로 stairs[1] 가 최대값
-        dp[2] = Math.max(seq[2], seq[1] + seq[2]);
-
-        // n = 3 이상인 경우, 계단 3개 이상이므로 점화식 적용
-        // n = 3 인 경우, score[0] = 0 으로 초기화되어 있기 때문에 괜찮음
-        for (int i = 3; i <= n; i++) {
-            dp[i] = Math.max(dp[i - 3] + seq[i - 1], dp[i - 2]) + seq[i];
+        // 확실하게 구할 수 있는 최대 누적값
+        if (N == 1) {
+            dp[1] = stairs[1];
+        }
+        // 확실하게 구할 수 있는 최대 누적값
+        if (N >= 2) {
+            dp[1] = stairs[1];
+            dp[2] = stairs[1] + stairs[2];
         }
 
-        return dp[n];
+        return find(N);
     }
 
-    public static void main(String[] args) {
+    private static int find(int N) {
+        if (dp[N] == null) {
+            dp[N] = Math.max(find(N - 3) + stairs[N - 1], find(N - 2)) + stairs[N];
+        }
+        return dp[N];
+    }
+
+    public static void main(String[] args) throws IOException {
         System.out.println(solution());
     }
-
 }
