@@ -3,80 +3,89 @@ package personalStudy.week9;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class BOJ4963_BFS {
 
-    private static final List<Integer> ANSWERS = new ArrayList<>();
-    private static int[][] board;
-    private static boolean[][] visited;
-    private static int width;
-    private static int height;
+    private static int[][] map;
+    private static boolean visited[][];
+    private static StringTokenizer st;
+    private static int w;
+    private static int h;
     // 상 하 좌 우 좌상 좌하 우상 우하
     private static int[] dirX = {0, 0, -1, 1, -1, -1, 1, 1};
     private static int[] dirY = {1, -1, 0, 0, 1, -1, 1, -1};
+    private static final String END = "0 0";
+    private static final StringBuilder SB = new StringBuilder();
 
-    private static void solution() throws IOException {
+    private static String solution() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        String str;
-        while (!(str = br.readLine()).equals("0 0")) {
-            StringTokenizer st = new StringTokenizer(str);
-            width = Integer.parseInt(st.nextToken());
-            height = Integer.parseInt(st.nextToken());
+        String line;
+        while (!(line = br.readLine()).equals(END)) {
+            st = new StringTokenizer(line); // 3 2
+            w = Integer.parseInt(st.nextToken());
+            h = Integer.parseInt(st.nextToken());
 
-            // 초기화
-            board = new int[height][width];
-            for (int i = 0; i < height; i++) {
+            map = new int[h + 1][w + 1];
+            visited = new boolean[h + 1][w + 1];
+
+            for (int y = 1; y <= h; y++) {
                 st = new StringTokenizer(br.readLine());
-                for (int j = 0; j < width; j++) {
-                    board[i][j] = Integer.parseInt(st.nextToken());
+                for (int x = 1; x <= w; x++) {
+                    map[y][x] = Integer.parseInt(st.nextToken());
                 }
             }
 
-            // 초기화
-            visited = new boolean[height][width];
-
-            // 로직
             int count = 0;
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    if (!visited[i][j] && board[i][j] == 1) {
-                        BFS(j, i); // width, height
+            for (int y = 1; y <= h; y++) {
+                for (int x = 1; x <= w; x++) {
+                    if (!visited[y][x] && map[y][x] == 1) {
+                        BFS(new Position(x, y));
                         count++;
                     }
                 }
             }
-            ANSWERS.add(count);
+
+            SB.append(count).append("\n");
         }
+
+        return SB.toString();
     }
 
-    private static void BFS(int w, int h) {
-        final Queue<int[]> QUEUE = new LinkedList<>();
-        QUEUE.add(new int[]{w, h});
-        visited[h][w] = true;
-        while (!QUEUE.isEmpty()) {
-            int[] pos = QUEUE.poll();
+    private static void BFS(Position pos) {
+        Queue<Position> queue = new LinkedList<>();
+        queue.add(pos);
+        visited[pos.y][pos.x] = true;
+        while (!queue.isEmpty()) {
+            Position p = queue.poll();
             for (int i = 0; i < 8; i++) {
-                int nextX = pos[0] + dirX[i];
-                int nextY = pos[1] + dirY[i];
-                if (nextX < 0 || nextY < 0 || nextX > width - 1 || nextY > height - 1) {
-                    continue;
-                }
-                if (!visited[nextY][nextX] && board[nextY][nextX] == 1) {
-                    QUEUE.add(new int[]{nextX, nextY});
+                int nextX = p.x + dirX[i];
+                int nextY = p.y + dirY[i];
+                if (canGoRegardlessOfVisited(nextX, nextY) && !visited[nextY][nextX] && map[nextY][nextX] == 1) {
+                    queue.add(new Position(nextX, nextY));
                     visited[nextY][nextX] = true;
                 }
             }
         }
     }
 
+    private static boolean canGoRegardlessOfVisited(int nextX, int nextY) {
+        return (1 <= nextX && nextX <= w && 1 <= nextY && nextY <= h);
+    }
+
+    private static class Position {
+        private int x;
+        private int y;
+        private Position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        solution();
-        ANSWERS.stream().forEach(i -> System.out.println(i));
+        System.out.println(solution());
     }
 }

@@ -1,57 +1,60 @@
 package personalStudy.week9;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class BOJ1697 {
 
-    private static int N;
-    private static int K;
-    private static boolean[] visited;
-    private static Queue<Integer> queue;
-    private static int count;
+    private static int myIdx;
+    private static int sisIdx;
+
     private static final int MIN = 0;
-    private static final int MAX = 100_000;
+    private static final int MAX = 30;
+    private static int[] visitedSum = new int[MAX + 1];
 
-    private static void solution() {
-        Scanner sc = new Scanner(System.in);
-        N = sc.nextInt();
-        K = sc.nextInt();
-        visited = new boolean[MAX + 1];
-        queue = new LinkedList<>();
-        queue.add(N);
-        visited[N] = true;
+    private static StringTokenizer st;
 
-        if (N == K) return; // 수빈이와 동생 위치가 동일할 경우
+    private static int solution() throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        st = new StringTokenizer(br.readLine());
 
-        while(!queue.isEmpty()) {
-            count++;
-            int size = queue.size();
-            for (int i = 0; i < size; i++) { // queue 소진. 아래에서 queue 크기 변경되기 때문 queue.size() 불가
-                Integer q = queue.poll();
+        myIdx = Integer.parseInt(st.nextToken());
+        sisIdx = Integer.parseInt(st.nextToken());
 
-                if (q - 1 == K || q + 1 == K || q * 2 == K) { // 수빈이가 걷거나 순간이동한 위치가 동생 위치라면
-                    return;
-                }
-                if (q - 1 >= MIN && !visited[q - 1]) { // 수빈이가 걸은(q+1) 위치가 방문한 적이 없다면
-                    queue.add(q - 1);
-                    visited[q - 1] = true;
-                }
-                if (q + 1 <= MAX && !visited[q + 1]) { // 수빈이가 걸은(q-1) 위치가 방문한 적이 없다면
-                    queue.add(q + 1);
-                    visited[q + 1] = true;
-                }
-                if (q * 2 <= MAX && !visited[2 * q]) { // 수빈이가 순간이동한(q*2) 위치가 방문한 적이 없다
-                    queue.add(q * 2);
-                    visited[q * 2] = true;
-                }
-            }
-        }
+        return BFS();
     }
 
-    public static void main(String[] args) {
-        solution();
-        System.out.println(count);
+    private static int BFS() {
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(myIdx);
+        visitedSum[myIdx] = 1;
+        while (!queue.isEmpty()) {
+            Integer myIndex = queue.poll();
+            if (isInBound(myIndex + 1) && visitedSum[myIndex + 1] == 0) {
+                queue.add(myIndex + 1);
+                visitedSum[myIndex + 1] = visitedSum[myIndex] + 1;
+            }
+            if (isInBound(myIndex - 1) && visitedSum[myIndex - 1] == 0) {
+                queue.add(myIndex - 1);
+                visitedSum[myIndex - 1] = visitedSum[myIndex] + 1;
+            }
+            if (isInBound(myIndex * 2) && visitedSum[myIndex * 2] == 0) {
+                queue.add(myIndex * 2);
+                visitedSum[myIndex * 2] = visitedSum[myIndex] + 1;
+            }
+        }
+        return visitedSum[sisIdx];
+    }
+
+    private static boolean isInBound(int nextIdx) {
+        return (MIN <= nextIdx && nextIdx <= MAX);
+    }
+
+    public static void main(String[] args) throws IOException {
+        System.out.println(solution() - 1);
     }
 }
