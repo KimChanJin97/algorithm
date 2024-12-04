@@ -1,88 +1,72 @@
 package personalStudy.week9;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class BOJ7562 {
 
-    private static boolean[][] visited;
+    private static int[][] visited;
     private static int I;
-    private static int x2;
-    private static int y2;
-    private static final int[] DIR_X = {-2, -1, 1, 2, -2, -1, 1, 2};
-    private static final int[] DIR_Y = {1, 2, 2, 1, -1, -2, -2, -1};
+    private static int dstX;
+    private static int dstY;
 
-    private static void solution() throws IOException {
+    private static int[] dirX = {-2, -1, 1, 2, -2, -1, 1, 2};
+    private static int[] dirY = {1, 2, 2, 1, -1, -2, -2, -1};
+
+    private static StringTokenizer st;
+    private static StringBuilder sb = new StringBuilder();
+
+    private static String solution() throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int tc = Integer.parseInt(br.readLine());
-        StringTokenizer st;
+
         while (tc-- > 0) {
             I = Integer.parseInt(br.readLine());
-            visited = new boolean[I][I];
+            visited = new int[I][I];
 
             st = new StringTokenizer(br.readLine());
-            int x1 = Integer.parseInt(st.nextToken());
-            int y1 = Integer.parseInt(st.nextToken());
+            int srcX = Integer.parseInt(st.nextToken());
+            int srcY = Integer.parseInt(st.nextToken());
 
             st = new StringTokenizer(br.readLine());
-            x2 = Integer.parseInt(st.nextToken());
-            y2 = Integer.parseInt(st.nextToken());
+            dstX = Integer.parseInt(st.nextToken());
+            dstY = Integer.parseInt(st.nextToken());
 
-            System.out.println(BFS(x1, y1));
+            sb.append(BFS(new int[]{srcX, srcY}) - 1).append("\n");
         }
+        return sb.toString();
     }
 
-    private static int BFS(int x, int y) {
-        final Queue<Piece> QUEUE = new LinkedList<>();
-        QUEUE.add(new Piece(x, y, 0));
-        visited[y][x] = true;
+    private static int BFS(int[] src) {
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(src);
+        int srcX = src[0];
+        int srcY = src[1];
 
-        if (x == x2 && y == y2) return 0;
+        if (srcX == dstX && srcY == dstY) return 1;
 
-        while (!QUEUE.isEmpty()) {
-            Piece piece = QUEUE.poll();
+        visited[srcY][srcX] = 1;
+        while (!queue.isEmpty()) {
+            int[] now = queue.poll();
             for (int i = 0; i < 8; i++) {
-                int nextX = piece.x + DIR_X[i];
-                int nextY = piece.y + DIR_Y[i];
-
-                // 범위 벗어난다면 다음
-                if (nextX < 0 || nextY < 0 || nextX > I - 1 || nextY > I - 1) {
-                    continue;
-                }
-                // 목적지에 도착했다면
-                if (nextX == x2 && nextY == y2) {
-                    return piece.move + 1;
-                }
-                // 목적지에 도착하지 못했다면
-                if (!visited[nextY][nextX]) {
-                    QUEUE.add(new Piece(nextX, nextY, piece.move + 1));
-                    visited[nextY][nextX] = true;
+                int nowX = now[0];
+                int nowY = now[1];
+                int nextX = now[0] + dirX[i];
+                int nextY = now[1] + dirY[i];
+                if (isInRange(nextX, nextY) && visited[nextY][nextX] == 0) {
+                    queue.add(new int[]{nextX, nextY});
+                    visited[nextY][nextX] = visited[nowY][nowX] + 1;
                 }
             }
         }
-        return -1;
+        return visited[dstY][dstX];
     }
 
-    private static class Piece {
-        int x;
-        int y;
-        int move;
-        public Piece(int x, int y, int move) {
-            this.x = x;
-            this.y = y;
-            this.move = move;
-        }
+    private static boolean isInRange(int nextX, int nextY) {
+        return (0 <= nextX && nextX < I && 0 <= nextY && nextY < I);
     }
 
     public static void main(String[] args) throws IOException {
-        solution();
+        System.out.println(solution());
     }
 }
