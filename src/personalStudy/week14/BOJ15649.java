@@ -3,7 +3,7 @@ package personalStudy.week14;
 import java.io.*;
 import java.util.*;
 
-public class BOJ1182 {
+public class BOJ15649 {
 
     private static int[] arr;
     private static boolean[] visited;
